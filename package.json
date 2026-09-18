@@ -1,0 +1,24 @@
+{
+  "name": "atelier-typage-avance",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=23.6.0"
+  },
+  "scripts": {
+    "start": "node exercice.ts",
+    "start:tsx": "tsx exercice.ts",
+    "check": "tsc",
+    "test": "node scripts/etat.mjs",
+    "test:1": "tsc -p tests/etape-1.json && echo \"✅ Étape 1 terminée\"",
+    "test:2": "tsc -p tests/etape-2.json && echo \"✅ Étape 2 terminée\"",
+    "test:3": "tsc -p tests/etape-3.json && echo \"✅ Étape 3 terminée\"",
+    "test:4": "tsc -p tests/etape-4.json && echo \"✅ Étape 4 terminée\"",
+    "test:corrige": "tsc -p tsconfig.corrige.json && echo \"✅ Corrigé de référence\"",
+    "verify": "node scripts/verify-progression.mjs"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}

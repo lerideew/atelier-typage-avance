@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": false
+  },
+  "include": [],
+  "files": ["assert.d.ts", "etape-1.test-d.ts", "../exercice.ts"]
+}
