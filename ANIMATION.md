@@ -1,9 +1,15 @@
 # Plan d'animation — 2h
 
 Document pour l'animateur. L'énoncé participant est dans `ENONCE.md`. Le corrigé n'est pas secret —
-`corriges/etape-1.ts` à `etape-4.ts` sont distribués comme filet de rattrapage — mais
-`dependencies-container.ts` (même code final, commenté pour la démo) reste fermé jusqu'à la clôture :
-c'est lui que tu ouvres à 0:10 pour montrer le résultat, pas avant.
+les branches `etape-1` à `etape-4` (une par étape, `exercice.ts` déjà résolu jusqu'à cette étape) sont
+distribuées comme filet de rattrapage — mais `dependencies-container.ts` (même code final, commenté
+pour la démo), qui ne vit que sur `formateur`, reste fermé jusqu'à la clôture : c'est lui que tu ouvres
+à 0:10 pour montrer le résultat, pas avant.
+
+Le dépôt est organisé en branches : `formateur` (ce document, la démo, les sources des corrigés dans
+`corriges/`) est ta branche de travail ; `depart` est le point de départ distribué aux participants
+(énoncé + `exercice.ts` vierge + tests, sans ce document ni les corrigés) ; `etape-1` à `etape-4` en
+découlent, chaînées, une par étape.
 
 **Format recommandé** : binômes, un seul clavier, on tourne à chaque étape.
 Le typage avancé se discute mieux à deux, et ça divise par deux le nombre de personnes bloquées en silence.
@@ -191,5 +197,5 @@ Trois choses à laisser en tête :
 
 ## Ce qui est déjà en place
 
-- **Fichiers de rattrapage** : `corriges/etape-1.ts` à `etape-4.ts`, chacun l'état d'arrivée de l'étape correspondante. Un binôme bloqué copie le fichier par-dessus son `exercice.ts` et repart avec le groupe — sans eux, il est perdu pour les 40 minutes restantes.
-- `dependencies-container.ts` est la même solution finale que `corriges/etape-4.ts`, mais commentée pour la démo de cadrage de 0:10 — ce n'est pas un fichier distinct à maintenir en parallèle.
+- **Branches de rattrapage** : `etape-1` à `etape-4`, chacune l'état d'arrivée de l'étape correspondante (chaînées depuis `depart`). Un binôme bloqué fait `git checkout etape-N -- exercice.ts` (ou bascule entièrement sur la branche) et repart avec le groupe — sans eux, il est perdu pour les 40 minutes restantes. Les sources de ces branches restent versionnées dans `corriges/` sur `formateur`, pour préparer la séance et alimenter `npm run verify`.
+- `dependencies-container.ts` (branche `formateur` uniquement) est la même solution finale que la branche `etape-4`, mais commentée pour la démo de cadrage de 0:10 — ce n'est pas un fichier distinct à maintenir en parallèle.
