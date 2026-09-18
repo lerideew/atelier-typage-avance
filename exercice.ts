@@ -9,6 +9,10 @@ interface ProviderRecord {
   isSingleton: boolean;
 }
 
+type AvailableName<TName extends string, TServices> = TName extends keyof TServices
+  ? never
+  : TName;
+
 type WithService<TServices, TName extends string, TService> = TServices & {
   readonly [K in TName]: TService;
 };
@@ -25,10 +29,8 @@ class DependenciesContainer<TServices extends Record<string, any> = {}> {
     this.singletons = singletons;
   }
 
-  // TODO étape 2 : à chaque add(), le container renvoyé doit connaître un service de plus.
-  // TODO étape 4 (bonus) : refuser un nom déjà enregistré.
   add<TName extends string, TService>(
-    name: TName,
+    name: AvailableName<TName, TServices>,
     factory: Factory<TService>,
     isSingleton: boolean = false
   ): DependenciesContainer<WithService<TServices, TName, TService>> {
@@ -41,7 +43,6 @@ class DependenciesContainer<TServices extends Record<string, any> = {}> {
     );
   }
 
-  // TODO étape 3 : n'accepter qu'un nom connu, et renvoyer le type exact du service.
   retrieve<TName extends keyof TServices>(name: TName): TServices[TName] {
     const key = name as string;
     const provider = this.providers.get(key);
