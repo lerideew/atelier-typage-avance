@@ -42,21 +42,22 @@ class DependenciesContainer<TServices extends Record<string, any> = {}> {
   }
 
   // TODO étape 3 : n'accepter qu'un nom connu, et renvoyer le type exact du service.
-  retrieve(name) {
-    const provider = this.providers.get(name);
+  retrieve<TName extends keyof TServices>(name: TName): TServices[TName] {
+    const key = name as string;
+    const provider = this.providers.get(key);
 
     if (!provider) {
-      throw new Error(`Service ${name} introuvable.`);
+      throw new Error(`Service ${key} introuvable.`);
     }
 
-    if (this.singletons.has(name)) {
-      return this.singletons.get(name);
+    if (this.singletons.has(key)) {
+      return this.singletons.get(key);
     }
 
     const service = provider.factory(this);
 
     if (provider.isSingleton) {
-      this.singletons.set(name, service);
+      this.singletons.set(key, service);
     }
 
     return service;
