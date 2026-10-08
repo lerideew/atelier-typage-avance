@@ -93,7 +93,10 @@ Le type du service change d'une factory à l'autre : il te faut un générique.
 
 Pour le container reçu en paramètre, `any` est acceptable ici — on ne peut pas encore le typer sans tourner en rond.
 
-**Pas à pas** (vérifie avec `npm run check` après chaque point) :
+<details><summary>Pas à pas</summary>
+
+Vérifie avec `npm run check` après chaque point.
+
 
 1. En haut du fichier, écris `type Factory<TService> = ...` : une fonction à un paramètre `container`
    (typé `any`) qui renvoie `TService`. Relance `npm run test:1` : les erreurs liées à `Factory` doivent disparaître.
@@ -104,6 +107,8 @@ Pour le container reçu en paramètre, `any` est acceptable ici — on ne peut p
 4. Dans `add()`, type le paramètre `factory` avec ta `Factory`. Il n'a pas encore de service précis :
    pour l'instant, `Factory<unknown>` ou `Factory<any>`. L'erreur sur `factory` disparaît.
 5. En bas du fichier, type `input` de `jsonParser`. L'erreur sur `input` disparaît.
+
+</details>
 
 <details><summary>Coup de pouce : forme de <code>Factory</code> et <code>ProviderRecord</code></summary>
 
@@ -118,6 +123,7 @@ interface ProviderRecord {
 
 Remplace chaque `???` : il y en a un par information donnée plus haut (le container, le service renvoyé,
 la factory stockée — hétérogène, donc `Factory<any>` —, et un booléen).
+
 </details>
 
 **Vérification** : `npm run test:1` passe, et `npm run check` n'affiche plus d'erreur sur `factory` ni
@@ -136,14 +142,18 @@ défaut est `{}` (un container neuf ne connaît rien). Pas besoin d'autre param�
 Puis fais en sorte que `add()` renvoie un container dont le registre contient **une entrée de plus** que le précédent.
 C'est le cœur de l'exercice.
 
-Pistes : un générique capture le nom passé en argument ; le contraindre par `extends string` demande
+<details><summary>Pistes</summary>
+
+un générique capture le nom passé en argument ; le contraindre par `extends string` demande
 à TypeScript d'inférer le littéral `"database"` plutôt que `string`. Un autre capture le type produit par la factory.
 Dans `add()`, `new DependenciesContainer(...)` ne devine pas le nouveau registre : donne-lui-le
 explicitement (`new DependenciesContainer<...>(...)`).
 Pour fabriquer un objet dont la clé est ce nom, regarde du côté des *mapped types* (`{ [K in TName]: ... }`).
 Pour combiner l'ancien registre et la nouvelle entrée, pense à l'intersection (`&`).
 
-**Pas à pas** :
+</details>
+
+<details><summary>Pas à pas</summary>
 
 1. Ajoute le paramètre de type à la classe : `class DependenciesContainer<TServices ... = {}>`.
    `npm run check` ne dit rien de plus, c'est normal : le test 2 va lui commencer à avoir un sens.
@@ -156,6 +166,8 @@ Pour combiner l'ancien registre et la nouvelle entrée, pense à l'intersection 
    nouveau registre. Donne-le-lui entre chevrons (`new DependenciesContainer<...>(...)`).
 6. `npm run test:2`. Puis survole `container` en bas du fichier.
 
+</details>
+
 <details><summary>Coup de pouce : le type « une entrée de plus »</summary>
 
 ```ts
@@ -165,6 +177,7 @@ type WithService<TServices, TName extends string, TService> = TServices & {
 ```
 
 Un *mapped type* sur `TName` ne produit qu'une seule clé, puisque `TName` est un littéral comme `"database"`.
+
 </details>
 
 <details><summary>Coup de pouce : si le test 2 ne passe pas</summary>
@@ -172,6 +185,7 @@ Un *mapped type* sur `TName` ne produit qu'une seule clé, puisque `TName` est u
 - Si `keyof` donne `string` au lieu de `"database" | "count"`, c'est que `TName` n'est pas contraint par
   `extends string`, ou qu'il n'est pas utilisé comme type du paramètre `name`.
 - Si le type d'un service est `unknown`, c'est que `factory` n'est pas typée avec `Factory<TService>`.
+
 </details>
 
 **Vérification** : `npm run test:2` passe. Survole aussi `container` : tu dois retrouver tes trois services
@@ -186,14 +200,18 @@ de type local (`TName`) contraint aux clés du registre.
 
 `retrieve()` ne doit accepter qu'un nom présent dans le registre, et renvoyer le type exact du service correspondant.
 
-Pistes : `keyof` pour contraindre le nom aux clés du registre, et un *accès indexé* (`TServices[TName]`) pour en tirer le type.
+<details><summary>Pistes</summary>
+
+`keyof` pour contraindre le nom aux clés du registre, et un *accès indexé* (`TServices[TName]`) pour en tirer le type.
 
 Tu vas buter sur les appels à la `Map`, qui attend une clé `string` : `keyof` donne en effet
 `string | number | symbol`, pas forcément une `string`. Deux solutions : contraindre en plus
 `TName extends keyof TServices & string` (aucun cast), ou écrire `const key = name as string;` en haut de la méthode
 et utiliser `key` ensuite (seule modification de corps de méthode tolérée de l'exercice).
 
-**Pas à pas** :
+</details>
+
+<details><summary>Pas à pas</summary>
 
 1. Dans `retrieve(name)`, ajoute un paramètre de type `TName` contraint aux clés du registre
    (`keyof TServices`) et type `name` avec. `npm run check` : l'erreur sur `name` disparaît, mais
@@ -203,11 +221,14 @@ et utiliser `key` ensuite (seule modification de corps de méthode tolérée de 
 4. Si le `return` est en erreur, rappelle-toi que les `Map` stockent `any` (étape 1) : il ne devrait pas l'être.
 5. `npm run test:3`, puis `npm start` : la sortie doit être inchangée.
 
+</details>
+
 <details><summary>Coup de pouce : la signature complète</summary>
 
 ```ts
 retrieve<TName extends keyof TServices & string>(name: TName): TServices[???] { ... }
 ```
+
 </details>
 
 **Vérification** : `npm run test:3` passe — `database.connect()` est autorisé, et `container.retrieve("mailer")` ne compile plus.
@@ -218,10 +239,14 @@ retrieve<TName extends keyof TServices & string>(name: TName): TServices[???] { 
 
 Enregistrer deux fois le même nom devrait être une erreur de compilation.
 
+<details><summary>Pistes</summary>
+
 Piste : un *conditional type* sur le paramètre `name`. Si le nom est déjà une clé du registre, fais-le se résoudre
 en `never` — un type qu'aucune valeur ne peut satisfaire, ce qui rend l'argument impossible à fournir.
 
-**Pas à pas** :
+</details>
+
+<details><summary>Pas à pas</summary>
 
 1. Écris un type conditionnel `AvailableName<TName extends string, TServices>` : si `TName` est une clé
    de `TServices` (`TName extends keyof TServices`), il vaut `never`, sinon il vaut `TName`.
@@ -229,18 +254,22 @@ en `never` — un type qu'aucune valeur ne peut satisfaire, ce qui rend l'argume
 3. `npm run test:4`. Si c'est rouge sur « l'inférence de l'étape 2 », relis l'étape 1 de ce pas-à-pas :
    le *else* du conditionnel doit renvoyer `TName`, pas `string`.
 
+</details>
+
 <details><summary>Coup de pouce : forme du type</summary>
 
 ```ts
 type AvailableName<TName extends string, TServices> =
   TName extends keyof TServices ? ??? : ???;
 ```
+
 </details>
 
 <details><summary>Pourquoi `TName` reste inférable alors que `name` n'est plus de type `TName` ?</summary>
 
 TypeScript sait inférer `TName` à travers un type conditionnel qui renvoie `TName` dans une de ses branches :
 il en déduit que `TName` est le littéral passé en argument, puis évalue le conditionnel.
+
 </details>
 
 **Vérification** : `npm run test:4` passe. `container.add("database", () => new Database())` ne compile plus,
